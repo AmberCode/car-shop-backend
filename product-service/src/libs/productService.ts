@@ -9,13 +9,16 @@ const dbOptions: ClientConfig = {
     user: PG_USERNAME,
     password: PG_PASSWORD,
 }
-const client = new Client(dbOptions);
+
 
 export const getProducts = async (): Promise<Array<Product>> => {
+    const query = `SELECT * 
+    FROM "product" 
+    LEFT JOIN "stock" ON "product"."id" = "stock"."product_id"`;
+    
+    const client = new Client(dbOptions);
+
     try {
-        const query = `SELECT * 
-            FROM "product" 
-            LEFT JOIN "stock" ON "product"."id" = "stock"."product_id"`;
         await client.connect();
         const { rows } = await client.query(query);
         return rows.map((x) => {
@@ -31,7 +34,11 @@ export const getProducts = async (): Promise<Array<Product>> => {
         console.error(error.stack);
         throw error;
     } finally {
-        await client.end();
+        try {
+            await client.end();
+        } catch (error) {
+            console.log('Error on client.end', error);
+        }
     }
 };
 
