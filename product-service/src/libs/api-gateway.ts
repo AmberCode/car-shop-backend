@@ -5,7 +5,7 @@ import { Product } from "./models";
 type ValidatedAPIGatewayProxyEvent<S> = Omit<APIGatewayProxyEvent, 'body'> & { body: FromSchema<S> }
 export type ValidatedEventAPIGatewayProxyEvent<S> = Handler<ValidatedAPIGatewayProxyEvent<S>, APIGatewayProxyResult>
 
-export const formatJSONResponse = (statusCode: number, response: Record<string, unknown> | string | Array<Product>) => {
+export const formatJSONResponse = (statusCode: number, response: any) => {
   return {
     statusCode: statusCode,
     headers: {

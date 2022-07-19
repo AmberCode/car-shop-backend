@@ -1,6 +1,6 @@
 import { formatJSONResponse, ValidatedEventAPIGatewayProxyEvent } from '@libs/api-gateway';
 import { middyfy } from '@libs/lambda';
-import { getProducts } from '../../libs/dbService';
+import { getProducts } from '../../libs/productService';
 
 const getProductsList: ValidatedEventAPIGatewayProxyEvent<unknown> = async (event) => {
   // console.log("ENVIRONMENT VARIABLES\n" + JSON.stringify(process.env, null, 2))

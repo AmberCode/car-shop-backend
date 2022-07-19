@@ -34,3 +34,34 @@ export const getProducts = async (): Promise<Array<Product>> => {
         await client.end();
     }
 };
+
+export const getProductById = async (id: string): Promise<Product> => {
+    try {
+        const query = `SELECT * 
+            FROM "product" 
+            LEFT JOIN "stock" ON "product"."id" = "stock"."product_id" 
+            WHERE "product"."id" = ($1)::uuid`;
+        await client.connect();
+        const { rows } = await client.query(query, [id]);
+
+        if (rows.length) {
+            const row = rows[0];
+            return {
+                id: row.id,
+                title: row.title,
+                description: row.description,
+                price: row.price,
+                count: row.count,
+            };
+        }
+
+        return undefined;
+    } catch (error) {
+        console.error(error.stack);
+        throw error;
+    } finally {
+        await client.end();
+    }
+};
+
+
