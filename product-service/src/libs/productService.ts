@@ -43,11 +43,14 @@ export const getProducts = async (): Promise<Array<Product>> => {
 };
 
 export const getProductById = async (id: string): Promise<Product> => {
+    const query = `SELECT * 
+        FROM "product" 
+        LEFT JOIN "stock" ON "product"."id" = "stock"."product_id" 
+        WHERE "product"."id" = ($1)::uuid`;
+
+    const client = new Client(dbOptions);
+
     try {
-        const query = `SELECT * 
-            FROM "product" 
-            LEFT JOIN "stock" ON "product"."id" = "stock"."product_id" 
-            WHERE "product"."id" = ($1)::uuid`;
         await client.connect();
         const { rows } = await client.query(query, [id]);
 
@@ -67,7 +70,11 @@ export const getProductById = async (id: string): Promise<Product> => {
         console.error(error.stack);
         throw error;
     } finally {
-        await client.end();
+        try {
+            await client.end();
+        } catch (error) {
+            console.log('Error on client.end', error);
+        }
     }
 };
 
