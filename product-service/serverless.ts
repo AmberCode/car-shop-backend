@@ -8,7 +8,7 @@ const serverlessConfiguration: AWS = {
   useDotenv: true,
   service: 'product-service',
   frameworkVersion: '3',
-  plugins: ['serverless-esbuild', 'serverless-dotenv-plugin'],
+  plugins: ['serverless-esbuild', 'serverless-dotenv-plugin', 'serverless-offline'],
   provider: {
     name: 'aws',
     runtime: 'nodejs14.x',

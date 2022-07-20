@@ -3,6 +3,7 @@ import { middyfy } from '@libs/lambda';
 import { getProductById } from '../../libs/productService';
 
 const getProductsById: ValidatedEventAPIGatewayProxyEvent<unknown> = async (event) => {
+  console.log('pathParameters', event.pathParameters);
   try {
     if (!event.pathParameters || !event.pathParameters["productId"]) {
       return formatJSONResponse(400, 'Missing productId');

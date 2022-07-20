@@ -1,16 +1,10 @@
 export default {
       type: "object",
       properties: {
-        id: {
-            type: "string",
-        },
-        title: {
-            type: "string",
-        },
-        description: {
-            type: "string",
-        },
-        price: { type: 'integer', minimum: 0 }
+        title: { type: 'string', minLength: 1 },
+        description: { type: 'string' },
+        price: { type: 'integer', minimum: 0 },
+        count: { type: 'integer', minimum: 0 }
       },
-      required: ["title", "price"],
+      required: ["title", "price", "count"],
 } as const;
