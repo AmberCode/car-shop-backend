@@ -4,12 +4,12 @@ create table product (
 	id uuid not null default uuid_generate_v4() primary key,
 	title text not null,
 	description text,
-	price integer
+	price integer NOT NULL
 );
 
 create table stock (
 	product_id uuid not null primary key,
-	count integer,
+	count integer NOT null,
 	foreign key (product_id) references product(id)
 );
 

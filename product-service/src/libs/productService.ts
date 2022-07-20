@@ -78,4 +78,33 @@ export const getProductById = async (id: string): Promise<Product> => {
     }
 };
 
+export const createProduct = async (product: Product): Promise<void> => {
+    const createProductQuery = `INSERT INTO "product" ("title", "description", "price")  
+        VALUES ($1, $2, $3) RETURNING id`;
+    const createProductValues = [product.title, product.description, product.price];
+    const createStockQuery = `INSERT INTO "stock" ("product_id", "count") 
+        VALUES ($1, $2)`;
+   
+    const client = new Client(dbOptions);
+
+    try {
+        await client.connect();
+        await client.query("BEGIN");
+        const result = await client.query(createProductQuery, createProductValues);
+        const createStockValues = [result.rows[0].id, product.count];
+        await client.query(createStockQuery, createStockValues);
+        await client.query("COMMIT");
+    } catch (error) {
+        console.error(error.stack);
+        await client.query("ROLLBACK");
+        throw error;
+    } finally {
+        try {
+            await client.end();
+        } catch (error) {
+            console.log('Error on client.end', error);
+        }
+    }
+};
+
 
