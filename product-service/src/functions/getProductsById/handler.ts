@@ -1,15 +1,16 @@
 import { formatJSONResponse, ValidatedEventAPIGatewayProxyEvent } from '@libs/api-gateway';
 import { middyfy } from '@libs/lambda';
-import productList from './../getProductsList/products.json';
+import { getProductById } from '../../libs/productService';
 
 const getProductsById: ValidatedEventAPIGatewayProxyEvent<unknown> = async (event) => {
+  console.log('pathParameters', event.pathParameters);
   try {
     if (!event.pathParameters || !event.pathParameters["productId"]) {
       return formatJSONResponse(400, 'Missing productId');
     }
 
     const { productId } = event.pathParameters;
-    const product = productList.find(x => x.id === productId);
+    const product = await getProductById(productId);
 
     if (product) {
       return formatJSONResponse(200, product);

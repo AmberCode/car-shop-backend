@@ -1,12 +1,11 @@
 import type { AWS } from '@serverless/typescript';
 
-import getProductsList from '@functions/getProductsList';
-import getProductsById from '@functions/getProductsById';
-import createProduct from '@functions/createProduct';
+import importProductsFile from '@functions/importProductsFile';
+import importFileParser from '@functions/importFileParser';
 
 const serverlessConfiguration: AWS = {
   useDotenv: true,
-  service: 'product-service',
+  service: 'import-service',
   frameworkVersion: '3',
   plugins: ['serverless-esbuild', 'serverless-dotenv-plugin', 'serverless-offline'],
   provider: {
@@ -22,15 +21,28 @@ const serverlessConfiguration: AWS = {
     environment: {
       AWS_NODEJS_CONNECTION_REUSE_ENABLED: '1',
       NODE_OPTIONS: '--enable-source-maps --stack-trace-limit=1000',
-      PG_HOST: process.env.PG_HOST,
-      PG_PORT: process.env.PG_PORT,
-      PG_DATABASE: process.env.PG_DATABASE,
-      PG_USERNAME: process.env.PG_USERNAME,
-      PG_PASSWORD: process.env.PG_PASSWORD,
+      BUCKET_NAME: process.env.BUCKET_NAME,
+      BUCKET_REGION: process.env.BUCKET_REGION
     },
+    iamRoleStatements: [
+      {
+        Effect: 'Allow',
+        Action: 's3:ListBucket',
+        Resource: [
+          'arn:aws:s3:::${env:BUCKET_NAME}'
+        ]
+      },
+      {
+        Effect: 'Allow',
+        Action: 's3:*',
+        Resource: [
+          'arn:aws:s3:::${env:BUCKET_NAME}/*'
+        ]
+      },
+    ]
   },
   // import the function via paths
-  functions: { getProductsList, getProductsById, createProduct },
+  functions: { importProductsFile, importFileParser },
   package: { individually: true },
   custom: {
     esbuild: {
@@ -42,7 +54,6 @@ const serverlessConfiguration: AWS = {
       define: { 'require.resolve': undefined },
       platform: 'node',
       concurrency: 10,
-      external: ['pg-native'],
     },
   },
 };

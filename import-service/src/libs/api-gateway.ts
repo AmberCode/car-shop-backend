@@ -14,4 +14,3 @@ export const formatJSONResponse = (statusCode: number, response: any) => {
     body: JSON.stringify(response)
   }
 }
-
