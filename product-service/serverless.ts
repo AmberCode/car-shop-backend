@@ -28,12 +28,16 @@ const serverlessConfiguration: AWS = {
       PG_DATABASE: process.env.PG_DATABASE,
       PG_USERNAME: process.env.PG_USERNAME,
       PG_PASSWORD: process.env.PG_PASSWORD,
+      REGION: process.env.REGION,
       SQS_URL: {
         'Fn::ImportValue': 'CatalogItemsQueueUrl'
       },
       SQS_ARN: { 
         'Fn::ImportValue': 'CatalogItemsQueueArn'
       },
+      SNS_ARN: {
+        Ref: 'createProductTopic'
+      }
     },
     lambdaHashingVersion: '20201221',
     iamRoleStatements: [
@@ -44,7 +48,48 @@ const serverlessConfiguration: AWS = {
           'Fn::ImportValue': 'CatalogItemsQueueArn'
         }
       },
+      {
+        Effect: 'Allow',
+        Action: 'sns:*',
+        Resource: [
+          {
+            Ref: 'createProductTopic',
+          },
+        ],
+      },
     ]
+  },
+  resources: {
+    Resources: {
+      createProductTopic: {
+        Type: 'AWS::SNS::Topic',
+        Properties: {
+          TopicName: 'createProductTopic',
+        },
+      },
+      SNSSubscription: {
+        Type: 'AWS::SNS::Subscription',
+        Properties: {
+          Endpoint: '${env:SNS_EMAIL}',
+          Protocol: 'email',
+          TopicArn: {
+            Ref: 'createProductTopic',
+          },
+        },
+      },
+    },
+    // Outputs: {
+    //   sqsUrl: {
+    //     Value: {
+    //       Ref: 'SQSQueue',
+    //     },
+    //     Export: { Name: 'sqsUrl' },
+    //   },
+    //   sqsArn: {
+    //     Value: '${self:provider.environment.SQS_ARN}',
+    //     Export: { Name: 'sqsArn' },
+    //   },
+    // },
   },
   // import the function via paths
   functions: { getProductsList, getProductsById, createProduct, catalogBatchProcess },
