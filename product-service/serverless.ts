@@ -3,6 +3,7 @@ import type { AWS } from '@serverless/typescript';
 import getProductsList from '@functions/getProductsList';
 import getProductsById from '@functions/getProductsById';
 import createProduct from '@functions/createProduct';
+import catalogBatchProcess from '@functions/catalogBatchProcess';
 
 const serverlessConfiguration: AWS = {
   useDotenv: true,
@@ -27,10 +28,26 @@ const serverlessConfiguration: AWS = {
       PG_DATABASE: process.env.PG_DATABASE,
       PG_USERNAME: process.env.PG_USERNAME,
       PG_PASSWORD: process.env.PG_PASSWORD,
+      SQS_URL: {
+        'Fn::ImportValue': 'CatalogItemsQueueUrl'
+      },
+      SQS_ARN: { 
+        'Fn::ImportValue': 'CatalogItemsQueueArn'
+      },
     },
+    lambdaHashingVersion: '20201221',
+    iamRoleStatements: [
+      {
+        Effect: 'Allow',
+        Action: 'sqs:*',
+        Resource: {
+          'Fn::ImportValue': 'CatalogItemsQueueArn'
+        }
+      },
+    ]
   },
   // import the function via paths
-  functions: { getProductsList, getProductsById, createProduct },
+  functions: { getProductsList, getProductsById, createProduct, catalogBatchProcess },
   package: { individually: true },
   custom: {
     esbuild: {

@@ -15,14 +15,12 @@ const importProductsFile: ValidatedEventAPIGatewayProxyEvent<unknown> = async (e
     }
 
     const filePath = `uploaded/${fileName}`;
-
     const params = {
       Bucket: process.env.BUCKET_NAME,
       Key: filePath,
       Expires: 360,
       ContentType: "text/csv",
     };
-
     const result = await S3.getSignedUrlPromise("putObject", params)
     return formatJSONResponse(200, result);
   } catch (error) {
