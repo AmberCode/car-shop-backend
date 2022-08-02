@@ -20,32 +20,45 @@ const catalogBatchProcess = async (event) => {
         count: parseInt(request.count),
       }
 
-      console.log("product1", product);
-      const checkSchema = validateSchema(schema, product);
-
-      console.log('Product schema', checkSchema.success);
-
-      if (!checkSchema.success) {
-        return formatJSONResponse(400, {
-          message: 'Failure to validate prod schema!',
-          error: checkSchema.errors,
-        });
-      }
-      
-      await createProduct(product);
-      await sns.publish({
-        Subject: 'Products created',
-        Message: JSON.stringify(product),
-        TopicArn: process.env.SNS_ARN,
-        MessageAttributes: {
-          status: {
-            DataType: 'String',
-            StringValue: 'success'
-          }
+      try {
+        const checkSchema = validateSchema(schema, product);
+  
+        if (!checkSchema.success) {
+          return formatJSONResponse(400, {
+            message: 'Failure to validate prod schema!',
+            error: checkSchema.errors,
+          });
         }
-      }, () => {
-        console.log('Email sent');
-      }).promise();
+        
+        await createProduct(product);
+        await sns.publish({
+          Subject: 'Products created',
+          Message: JSON.stringify(product),
+          TopicArn: process.env.SNS_ARN,
+          MessageAttributes: {
+            status: {
+              DataType: 'String',
+              StringValue: 'success'
+            }
+          }
+        }, () => {
+          console.log('Success email sent');
+        }).promise();
+      } catch (error) {
+        await sns.publish({
+          Subject: 'Products failed to create',
+          Message: JSON.stringify(product),
+          TopicArn: process.env.SNS_ARN,
+          MessageAttributes: {
+            status: {
+              DataType: 'String',
+              StringValue: 'failure'
+            }
+          }
+        }, () => {
+          console.log('Failure email sent');
+        }).promise();
+      }
     }
 
     return formatJSONResponse(200, "");

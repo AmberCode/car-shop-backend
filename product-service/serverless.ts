@@ -75,21 +75,25 @@ const serverlessConfiguration: AWS = {
           TopicArn: {
             Ref: 'createProductTopic',
           },
+          FilterPolicy: {
+            status: ["success"]
+          }
+        },
+      },
+      SNSSubscriptionFailure: {
+        Type: 'AWS::SNS::Subscription',
+        Properties: {
+          Endpoint: '${env:SNS_EMAIL_FAILURE}',
+          Protocol: 'email',
+          TopicArn: {
+            Ref: 'createProductTopic',
+          },
+          FilterPolicy: {
+            status: ["failure"]
+          }
         },
       },
     },
-    // Outputs: {
-    //   sqsUrl: {
-    //     Value: {
-    //       Ref: 'SQSQueue',
-    //     },
-    //     Export: { Name: 'sqsUrl' },
-    //   },
-    //   sqsArn: {
-    //     Value: '${self:provider.environment.SQS_ARN}',
-    //     Export: { Name: 'sqsArn' },
-    //   },
-    // },
   },
   // import the function via paths
   functions: { getProductsList, getProductsById, createProduct, catalogBatchProcess },
