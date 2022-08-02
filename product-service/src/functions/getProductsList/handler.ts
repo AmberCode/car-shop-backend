@@ -1,19 +1,16 @@
-import type { ValidatedEventAPIGatewayProxyEvent } from '@libs/api-gateway';
+import { formatJSONResponse, ValidatedEventAPIGatewayProxyEvent } from '@libs/api-gateway';
 import { middyfy } from '@libs/lambda';
-import productList from './products.json';
+import { getProducts } from '../../libs/productService';
 
 const getProductsList: ValidatedEventAPIGatewayProxyEvent<unknown> = async (event) => {
-  return {
-    statusCode: 200,
-    // todo: need to do it here because  httpApi: {
-    //   cors: true
-    // }, is not working
-    headers: {
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Headers': '*'
-    },
-    body: JSON.stringify(productList)
-  }
+  console.info("EVENT\n" + JSON.stringify(event, null, 2))
+  try {
+    const products = await getProducts();
+    return formatJSONResponse(200, products);
+  } catch (error) {
+    console.log("Error", error);
+    return formatJSONResponse(500, "Something went wrong");
+  }  
 };
 
 export const main = middyfy(getProductsList);

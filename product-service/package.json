@@ -4,6 +4,7 @@
   "description": "Serverless aws-nodejs-typescript template",
   "main": "serverless.ts",
   "scripts": {
+    "start": "serverless offline start",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "engines": {
@@ -11,16 +12,20 @@
   },
   "dependencies": {
     "@middy/core": "^2.5.3",
-    "@middy/http-json-body-parser": "^2.5.3"
+    "@middy/http-json-body-parser": "^2.5.3",
+    "pg": "^8.7.3"
   },
   "devDependencies": {
     "@serverless/typescript": "^3.0.0",
     "@types/aws-lambda": "^8.10.71",
     "@types/node": "^14.14.25",
+    "@types/pg": "^8.6.5",
     "esbuild": "^0.14.11",
     "json-schema-to-ts": "^1.5.0",
     "serverless": "^3.0.0",
+    "serverless-dotenv-plugin": "^4.0.1",
     "serverless-esbuild": "^1.23.3",
+    "serverless-offline": "^9.0.0",
     "ts-node": "^10.4.0",
     "tsconfig-paths": "^3.9.0",
     "typescript": "^4.1.3"
