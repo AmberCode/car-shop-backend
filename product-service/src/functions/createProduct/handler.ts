@@ -2,7 +2,7 @@ import { formatJSONResponse, ValidatedEventAPIGatewayProxyEvent } from '@libs/ap
 import { middyfy } from '@libs/lambda';
 import { Product } from '@libs/models';
 import { createProduct } from '../../libs/productService';
-import schema from './schema';
+import schema from '../../schema/createProduct';
 import { validateSchema } from '@libs/schemaValidator';
 
 const createProductHandler: ValidatedEventAPIGatewayProxyEvent<typeof schema> = async (event) => {
